@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, createContext, useContext, useEffect } from "react"
+import { ThemeProvider, createTheme } from "@mui/material/styles"
+import { CssBaseline, IconButton } from "@mui/material"
+import Layout from "./components/Layout"
+import Home from "./pages/home"
+import { Routes, Route, Navigate } from 'react-router'
+import Login from "./pages/login"
+import SignUp from "./pages/signUp"
+import PageNotFound from "./pages/pageNotFound"
+
+const ThemeContext = createContext()
+const AuthContext = createContext()
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [darkMode, setDarkMode] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token")
+    setIsAuthenticated(!!token)
+  }, [])
+
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+      primary: {
+        main: '#074173',
+      },
+      secondary: {
+        main: '#1679AB',
+      },
+    },
+  })
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Layout>
+            <Routes>
+              <Route path='/' element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
+              <Route path='/login' element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
+              <Route path='/signup' element={!isAuthenticated ? <SignUp /> : <Navigate to="/" />} />
+              <Route path='*' element={<PageNotFound />} />
+            </Routes>
+          </Layout>
+        </ThemeProvider>
+      </ThemeContext.Provider>
+    </AuthContext.Provider>
   )
 }
 
 export default App
+
+// Hook to toggle dark mode
+export function useThemeToggle() {
+  return useContext(ThemeContext)
+}
+
+// Hook to use authentication state
+export function useAuth() {
+  return useContext(AuthContext)
+}
