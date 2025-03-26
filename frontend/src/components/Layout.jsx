@@ -5,12 +5,12 @@ import Navbar from './Navbar'
 function Layout({ children }) {
 
     return (
-        <Box>
+        <>
             <Navbar />
-            <Container>
+            <Box>
                 {children}
-            </Container>
-        </Box>
+            </Box>
+        </>
     )
 }
 
