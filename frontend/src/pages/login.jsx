@@ -29,9 +29,11 @@ function Login() {
             .then((res) => {
                 const token = res.data.token
                 const user = res.data.user.email
+                const refresh_token = res.data.refresh_token
                 if (token) {
                     localStorage.setItem("access_token", token)
                     localStorage.setItem("user", user)
+                    localStorage.setItem("refresh_token", refresh_token)
                 }
                 setLoading(false)
                 setIsAuthenticated(true)

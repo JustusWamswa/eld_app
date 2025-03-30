@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { AdvancedMarker, APIProvider, Map } from '@vis.gl/react-google-maps'
-import { Box, Container } from '@mui/material'
+import { Box } from '@mui/material'
 import Directions from './Directions'
 import { useThemeToggle } from '../App'
 
@@ -30,10 +30,10 @@ function MapComp() {
   return (
     <Box height={'90vh'} position={'relative'}>
       <APIProvider apiKey={apiKey} libraries={['places']}>
-          <Map defaultCenter={currentLocation || position} defaultZoom={5} mapId="DEMO_MAP_ID" fullscreenControl={false} colorScheme={darkMode ? 'DARK' : 'LIGHT'}>
-            <AdvancedMarker position={currentLocation || position} />
-            <Directions />
-          </Map>
+        <Map defaultCenter={currentLocation || position} defaultZoom={5} mapId="DEMO_MAP_ID" fullscreenControl={false} colorScheme={darkMode ? 'DARK' : 'LIGHT'}>
+          <AdvancedMarker position={currentLocation || position} />
+          <Directions />
+        </Map>
       </APIProvider>
     </Box>
   )

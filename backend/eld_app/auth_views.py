@@ -17,7 +17,7 @@ def validate_password(password):
 
 @api_view(['POST'])
 def signup(request):
-    email = request.data.get('email')
+    email = request.data.get('email').strip().lower()
     password = request.data.get('password')
 
     # Validate email format
@@ -37,13 +37,14 @@ def signup(request):
 
     return Response({
             "token": str(refresh.access_token),
+            "refresh_token": str(refresh),
             "user": {"email": user.email},
-            'message': 'User registered successfully'
+            "message": "User registered successfully"
         }, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 def login(request):
-    email = request.data.get('email')
+    email = request.data.get('email').strip().lower()
     password = request.data.get('password')
 
     # Validate email and password input
@@ -58,6 +59,7 @@ def login(request):
         refresh = RefreshToken.for_user(user)
         return Response({
             'token': str(refresh.access_token),
+            "refresh_token": str(refresh),
             "user": {"email": user.email},
             'message': 'Login successful'
         }, status=status.HTTP_200_OK)

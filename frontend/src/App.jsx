@@ -1,12 +1,15 @@
 import { useState, createContext, useContext, useEffect } from "react"
-import { ThemeProvider, createTheme } from "@mui/material/styles"
-import { CssBaseline, IconButton } from "@mui/material"
+import { ThemeProvider } from "@mui/material/styles"
+import { CssBaseline } from "@mui/material"
 import Layout from "./components/Layout"
 import Home from "./pages/home"
 import { Routes, Route, Navigate } from 'react-router'
 import Login from "./pages/login"
 import SignUp from "./pages/signUp"
 import PageNotFound from "./pages/pageNotFound"
+import { getTheme } from "./utils/utils"
+import Trips from "./pages/trips"
+import TripSetup from "./pages/tripSetup"
 
 const ThemeContext = createContext()
 const AuthContext = createContext()
@@ -21,26 +24,16 @@ function App() {
     setIsAuthenticated(!!token)
   }, [])
 
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? "dark" : "light",
-      primary: {
-        main: '#074173',
-      },
-      secondary: {
-        main: '#1679AB',
-      },
-    },
-  })
-
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
       <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={getTheme(darkMode ? "dark" : "light")}>
           <CssBaseline />
           <Layout>
             <Routes>
               <Route path='/' element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
+              <Route path='/trips' element={isAuthenticated ? <Trips /> : <Navigate to="/login" />} />
+              <Route path='/trip/:id' element={isAuthenticated ? <TripSetup /> : <Navigate to="/login" />} />
               <Route path='/login' element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
               <Route path='/signup' element={!isAuthenticated ? <SignUp /> : <Navigate to="/" />} />
               <Route path='*' element={<PageNotFound />} />

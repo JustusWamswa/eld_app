@@ -30,3 +30,11 @@ class LogEntry(models.Model):
 
     def __str__(self):
         return f"Log Entry for Trip {self.trip.id} at {self.timestamp}"
+    
+class UserStatus(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    status = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"User status {self.id} at {self.timestamp}"

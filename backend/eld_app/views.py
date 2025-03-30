@@ -1,8 +1,9 @@
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Trip, LogEntry
-from .serializers import TripSerializer, LogEntrySerializer
+from .models import Trip, LogEntry, UserStatus
+from .serializers import TripSerializer, LogEntrySerializer, UserStatusSerializer
 from datetime import timedelta
 
 class TripViewSet(viewsets.ModelViewSet):
@@ -16,6 +17,26 @@ class LogEntryViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def index(request):
     return Response("<h4 style='text-align:center; margin-top:50;'>ELD APP</h4>")
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def user_status_view(request):
+    user = request.user
+
+    # Get or create a UserStatus for this user
+    user_status, created = UserStatus.objects.get_or_create(user=user, defaults={"status": ""})
+
+    if request.method == "GET":
+        serializer = UserStatusSerializer(user_status)
+        return Response(serializer.data)
+
+    elif request.method == "POST":
+        serializer = UserStatusSerializer(user_status, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Status updated", "status": serializer.data["status"]})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET'])
 def get_trip_logs(request, trip_id):

@@ -1,13 +1,13 @@
 import { Box, Button, Typography, TextField, Modal, Stack, Table, IconButton } from '@mui/material'
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps'
 import React, { useEffect, useState, useRef } from 'react'
-import { Autocomplete, LoadScript } from '@react-google-maps/api'
+import { Autocomplete } from '@react-google-maps/api'
 import { useModalStore } from '../stores/useModalStore'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
+import CloseButton from './Modals/ModalTitle'
+import ModalTitle from './Modals/ModalTitle'
 
 function Directions() {
-
-    const apiKey = import.meta.env.VITE_GOOGLE_MAP_API
 
     const map = useMap()
     const routesLibrary = useMapsLibrary("routes")
@@ -25,13 +25,16 @@ function Directions() {
 
     const selected = routes[routeIndex]
     const legs = selected?.legs
-    console.log('selected: ', selected)
+    // console.log('selected: ', selected)
 
     useEffect(() => {
         if (!routesLibrary || !map) return
         setDirectionsService(new routesLibrary.DirectionsService())
         setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }))
     }, [map, routesLibrary])
+
+    const handleClose = () => setNewTripOpen(false)
+    const handleOpen = () => setNewTripOpen(true)
 
     const calculateRoute = () => {
         if (!directionsService || !directionsRenderer) return
@@ -67,73 +70,65 @@ function Directions() {
         directionsRenderer.setRouteIndex(routeIndex)
     }, [routeIndex, directionsRenderer])
 
-    const handleClose = () => setNewTripOpen(false)
 
     return (
-        <Box bgcolor={'rgba(0,0,0,0.8)'} p={3} position={'absolute'} top={6} right={6} color={'white'} borderRadius={3} width={350} zIndex={0}>
-            <Stack display={newTripOpen ? 'block' : 'none'}>
-                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                    <Typography variant='h6' mb={2}>Enter Locations</Typography>
-                    <IconButton color='white' size='large' sx={{ mb: 2, color: 'white' }} onClick={handleClose}>
-                        <HighlightOffIcon color='white' sx={{ color: 'white' }} />
-                    </IconButton>
-                </Box>
-                <Autocomplete>
-                    <TextField
-                        inputRef={currentLocationRef}
-                        label="Current Location"
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
-                    />
-                </Autocomplete>
-                <Autocomplete>
-                    <TextField
-                        inputRef={pickupLocationRef}
-                        label="Pickup Location"
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
-                    />
-                </Autocomplete>
-                <Autocomplete>
-                    <TextField
-                        inputRef={dropoffLocationRef}
-                        label="Dropoff Location"
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
-                    />
-                </Autocomplete>
-                <Button fullWidth variant="contained" color="primary" onClick={calculateRoute} sx={{ mt: 2 }}>
-                    Get Directions
-                </Button>
-            </Stack>
-            <Stack display={newTripOpen ? 'none' : 'block'}>
-                {legs && 
-                <>
-                <Typography variant='h6'>{selected?.summary}</Typography>
-                <Typography>{legs[0].start_address.split(',')[0]} to {legs[1].end_address.split(',')[0]} via {legs[1].start_address.split(',')[0]} </Typography>
-                <Typography>Distance: {((legs[0].distance?.value + legs[1].distance?.value) / 1000).toFixed(1)} km</Typography>
-                <Typography>Duration: {Math.floor((legs[0].duration?.value + legs[1].duration?.value) / 60)} min</Typography>
+        <>
+            <Button
+                variant='contained'
+                sx={{ textTransform: 'capitalize', px: 3, py: 2, borderRadius: 3, fontSize: '1rem', bgcolor: 'secondary.main', position: 'absolute', top: 6, right: 6, zIndex: 50, width: 250, display: !newTripOpen ? 'block' : 'none' }}
+                onClick={handleOpen}
+            >
+                Set Route
+            </Button>
 
-                {/* <Typography variant='h6' mt={3}>Other routes</Typography>
-                    {routes.map((route, index) => (
-                        <Button
-                            key={route.summary}
-                            color='white'
+            <Box display={newTripOpen ? 'block' : 'none'} bgcolor={'rgba(0,0,0,0.8)'} p={3} position={'absolute'} top={6} right={6} color={'white'} borderRadius={3} width={350} zIndex={50}>
+                <Stack >
+                    <ModalTitle title={'Enter Locations'} handleClose={handleClose} />
+                    <Autocomplete>
+                        <TextField
+                            inputRef={currentLocationRef}
+                            placeholder="Current Location"
                             fullWidth
-                            sx={{ textTransform: 'capitalize', bgcolor: 'rgba(255,255,255,0.1)', mt: 1 }}
-                            onClick={() => setRouteIndex(index)}
-                        >
-                            {route.summary}
-                        </Button>
-                    ))} */}
-                </>
+                            variant="outlined"
+                            sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                        />
+                    </Autocomplete>
+                    <Autocomplete>
+                        <TextField
+                            inputRef={pickupLocationRef}
+                            placeholder="Pickup Location"
+                            fullWidth
+                            variant="outlined"
+                            sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                        />
+                    </Autocomplete>
+                    <Autocomplete>
+                        <TextField
+                            inputRef={dropoffLocationRef}
+                            placeholder="Dropoff Location"
+                            fullWidth
+                            variant="outlined"
+                            sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                        />
+                    </Autocomplete>
+                    <Button fullWidth variant="contained" onClick={calculateRoute} sx={{ mt: 2, textTransform: 'capitalize' }}>
+                        Get Directions
+                    </Button>
+                </Stack>
+                {/* <Stack display={newTripOpen ? 'none' : 'block'}>
+                    {legs &&
+                        <>
+                            <Typography variant='h6'>{selected?.summary}</Typography>
+                            <Typography>{legs[0].start_address.split(',')[0]} to {legs[1].end_address.split(',')[0]} via {legs[1].start_address.split(',')[0]} </Typography>
+                            <Typography>Distance: {((legs[0].distance?.value + legs[1].distance?.value) / 1000).toFixed(1)} km</Typography>
+                            <Typography>Duration: {Math.floor((legs[0].duration?.value + legs[1].duration?.value) / 60)} min</Typography>
+                        </>
                     }
-            </Stack>
+                </Stack> */}
 
-        </Box>
+            </Box>
+        </>
+
     )
 }
 

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from os import getenv
 from dotenv import load_dotenv
+from datetime import timedelta
+
 
 load_dotenv()
 
@@ -67,8 +69,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    
+    # 'ROTATE_REFRESH_TOKENS': True,  
+    # 'BLACKLIST_AFTER_ROTATION': True,  
+}
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173', 
+    'http://localhost:5174', 
 ]
 
 CORS_ALLOW_CREDENTIALS = True
