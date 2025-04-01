@@ -10,6 +10,7 @@ import PageNotFound from "./pages/pageNotFound"
 import { getTheme } from "./utils/utils"
 import Trips from "./pages/trips"
 import TripSetup from "./pages/tripSetup"
+import { getUserTheme } from "./services/api"
 
 const ThemeContext = createContext()
 const AuthContext = createContext()
@@ -22,6 +23,11 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("access_token")
     setIsAuthenticated(!!token)
+    getUserTheme()
+      .then((res) => {
+        setDarkMode(res.data.dark_mode)
+      })
+      .catch((err) => console.log(err))
   }, [])
 
   return (

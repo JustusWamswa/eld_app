@@ -71,12 +71,25 @@ api.interceptors.request.use(
     }
 )
 
-// Users
+// User
 export const createUser = async (credentials) => api.post(`auth/signup/`, credentials)
 export const loginUser = async (credentials) => api.post(`auth/login/`, credentials)
 export const getUserStatus = async () => api.get(`api/user-status/`)
 export const changeUserStatus = async (newStatus) => api.post(`api/user-status/`, newStatus)
-// export const updateUser = async (userId, user) => api.put(`api/users/${userId}/update/`, user)
-// export const deleteUser = async (userId) => api.delete(`api/users/${userId}/delete/`)
-// export const getUsers = async () => api.get(`api/users/list/`)
+
+// Trip
+export const createTrip = async (trip) => api.post(`api/trip/`, trip)
+export const getTrip = async (id) => api.get(`api/trip/${id}/`)
+export const getUserTrips = async () => api.get(`api/trip/mytrips/`) 
+
+// Theme
+export const getUserTheme = async () => api.get(`api/theme/`)
+export const changeUserTheme = async (newTheme) => api.post(`api/theme/`, newTheme)
+
+// LogEntry
+export const createLog = async (log) => api.post(`api/log/`, log)
+
+
+
+
 

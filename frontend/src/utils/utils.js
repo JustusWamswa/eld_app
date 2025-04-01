@@ -4,14 +4,14 @@ const lightPalette = {
   mode: "light",
   primary: {
     main: "#1B4242",
-    light: "#5C8374",
-    dark: "#092635",
+    light: "#2f6666",
+    dark: "#102b2b",
     contrastText: "#ffffff",
   },
   secondary: {
     main: "#5C8374",
-    light: "#ff5983",
-    dark: "#9a0036",
+    light: "#80a899",
+    dark: "#314d42",
     contrastText: "#ffffff",
   },
   background: {
@@ -28,14 +28,14 @@ const darkPalette = {
   mode: "dark",
   primary: {
     main: "#092635",
-    light: "#e3f2fd",
-    dark: "#42a5f5",
+    light: "#113a4f",
+    dark: "#041924",
     contrastText: "#ffffff",
   },
   secondary: {
     main: "#1B4242",
-    light: "#f8bbd0",
-    dark: "#c2185b",
+    light: "#2d6161",
+    dark: "#112e2e",
     contrastText: "#ffffff",
   },
   background: {
@@ -55,4 +55,24 @@ export const getTheme = (mode) => {
       fontFamily: "Roboto, Arial, sans-serif",
     },
   })
+}
+
+export const dateFormatter = (isoString) => {
+  const date = new Date(isoString);
+
+  // Extract day, month, and year
+  const day = date.getDate();
+  const month = date.toLocaleString(undefined, { month: 'long' }); // Uses user's local settings
+  const year = date.getFullYear();
+
+  // Extract local time in 12-hour format with AM/PM
+  const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+  const time = new Intl.DateTimeFormat(undefined, options).format(date);
+
+  // Get local timezone abbreviation
+  const timeZone = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
+      .formatToParts(date)
+      .find(part => part.type === 'timeZoneName')?.value || '';
+
+  return `${day} ${month} ${year} ${time} ${timeZone}`;
 }

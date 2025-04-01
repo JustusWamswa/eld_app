@@ -1,19 +1,28 @@
 import { Box, Button, LinearProgress, Modal, TextField, Typography } from '@mui/material'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useModalStore } from '../../stores/useModalStore'
 import CloseButton from './ModalTitle'
 import ModalTitle from './ModalTitle'
-import { useStateStore } from '../../stores/useStateStore'
+import { useTripStore } from '../../stores/useTripStore'
 import { Autocomplete } from '@react-google-maps/api'
-import { changeUserStatus } from '../../services/api'
+import { changeUserStatus, createLog } from '../../services/api'
+import { useParams } from 'react-router'
+import dayjs from 'dayjs'
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 
 
 function StatusModal({ tempStatus }) {
 
     const { statusOpen, setStatusOpen } = useModalStore()
-    const { status, setStatus } = useStateStore()
+    const { status, setStatus, logEntries, setLogEntries } = useTripStore()
     const autocompleteRef = useRef(null)
     const [loading, setLoading] = useState()
+    const [modalEntries, setModalEntries] = useState({})
+    const locationRef = useRef()
+    const { id } = useParams()
 
     const handleClose = () => {
         setStatusOpen(false)
@@ -26,33 +35,53 @@ function StatusModal({ tempStatus }) {
     const onPlaceChanged = () => {
         if (autocompleteRef.current) {
             const place = autocompleteRef.current.getPlace()
-            console.log(place)
-            console.log(place.formatted_address)
-            console.log(place.geometry.location.lat())
-            console.log(place.geometry.location.lng())
             // Handle the selected place
         }
     }
 
-    const handleStartCurrentStatus = () => {
-        setLoading(true)
-        changeUserStatus({status: tempStatus})
-        .then((res) => {
-            setStatus(res.data.status)
-            setLoading(false)
-            handleClose()
-        })
-        .catch((err) => {
-            console.log(err)
-            setLoading(false)
-        })
+    const handleSave = () => {
+        if (!locationRef?.current?.value || !modalEntries?.date) {
+            alert("Location and time are required")
+            return false
+        }
+        const place = autocompleteRef.current.getPlace()
+        console.log(modalEntries?.date)
+
+        const payload = {
+            "trip": id,
+            "status": tempStatus.status,
+            "location_name": place.formatted_address,
+            "location_lat": place.geometry.location.lat(),
+            "location_lng": place.geometry.location.lng(),
+            "start_time": new Date(modalEntries?.date),
+            "end_time": new Date(),
+            "activity": tempStatus.option,
+            "remarks": modalEntries?.remarks || ""
+        }
+
+        createLog(payload)
+            .then((res) => {
+                console.log(res)
+                setLogEntries([...logEntries, res.data.log])
+            })
+            .catch((err) => {
+                console.log(err)
+                return false
+            })
+
+        return true
+
     }
 
-    const handleEndCurrentStatus = () => {
+    const handleStartCurrentStatus = () => {
         setLoading(true)
-        changeUserStatus({ status: '' })
+        if (!handleSave()) {
+            setLoading(false)
+            return
+        }
+        changeUserStatus({ status: tempStatus.option, trip: id })
             .then((res) => {
-                setStatus(res.data.status)
+                setStatus(res.data)
                 setLoading(false)
                 handleClose()
             })
@@ -61,6 +90,26 @@ function StatusModal({ tempStatus }) {
                 setLoading(false)
             })
     }
+
+    const handleEndCurrentStatus = () => {
+        setLoading(true)
+        changeUserStatus({ status: '', trip: null })
+            .then((res) => {
+                setStatus(res.data)
+                setLoading(false)
+                handleClose()
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+            })
+    }
+
+    const handleChange = (e) => {
+        setModalEntries(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    }
+
+    console.log(modalEntries)
 
 
 
@@ -83,14 +132,14 @@ function StatusModal({ tempStatus }) {
                 p: 3,
                 outline: 'none' // Remove default focus outline
             }} >
-                <ModalTitle title={tempStatus} handleClose={handleClose} />
+                <ModalTitle title={tempStatus.option} handleClose={handleClose} />
                 <Typography>Location</Typography>
                 <Autocomplete
                     onLoad={onLoad}
                     onPlaceChanged={onPlaceChanged}
                 >
                     <TextField
-                        // inputRef={currentLocationRef}
+                        inputRef={locationRef}
                         placeholder="Enter Location"
                         fullWidth
                         variant="outlined"
@@ -98,15 +147,29 @@ function StatusModal({ tempStatus }) {
                     />
                 </Autocomplete>
                 <Typography>Start Time</Typography>
-                <TextField type='datetime-local' fullWidth sx={{ bgcolor: 'white' }} />
+                {/* <TextField type='datetime-local' fullWidth sx={{ bgcolor: 'white' }} value={modalEntries?.date} onChange={handleChange} name='date' /> */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DateTimePicker']}>
+                        <DateTimePicker
+                            disablePast
+
+                            value={modalEntries?.date}
+                            onChange={(newValue) => setModalEntries(prev => ({ ...prev, date: newValue }))}
+                            name='date'
+                            sx={{ bgcolor: 'white' }}
+                        />
+                    </DemoContainer>
+                </LocalizationProvider>
+                <Typography sx={{ mt: 2 }}>Remarks</Typography>
+                <TextField type='text' fullWidth sx={{ bgcolor: 'white' }} placeholder='Enter Remarks' value={modalEntries?.remarks} onChange={handleChange} name='remarks' />
                 {/* <Typography mt={2}>End Time</Typography>
                 <TextField type='datetime-local' fullWidth sx={{ bgcolor: 'white' }} /> */}
                 {loading ? <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize', bgcolor: 'red' }} loading >
                     Start
                 </Button>
-                : <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize' }} onClick={handleStartCurrentStatus}>
-                    Start
-                </Button>}
+                    : <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize' }} onClick={handleStartCurrentStatus}>
+                        Start
+                    </Button>}
             </Box>
 
         </Modal>

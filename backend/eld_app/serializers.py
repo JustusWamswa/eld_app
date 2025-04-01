@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trip, LogEntry, UserStatus
+from .models import Trip, LogEntry, UserStatus, Theme
 
 class TripSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,6 +12,15 @@ class LogEntrySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserStatusSerializer(serializers.ModelSerializer):
+    trip = serializers.PrimaryKeyRelatedField(queryset=Trip.objects.all(), allow_null=True, required=False)
     class Meta:
         model = UserStatus
-        fields = ["status"]
+        fields = ["status", "trip"]
+
+class ThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Theme
+        fields = ["dark_mode"]
+
+
+

@@ -3,13 +3,19 @@ from django.contrib.auth.models import User
 
 class Trip(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    current_latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    current_longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    pickup_latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    pickup_longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    dropoff_latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    dropoff_longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    current_cycle_used = models.FloatField(help_text="Hours used in the current cycle")
+    current_location_name = models.TextField(default='')
+    current_location_lat = models.DecimalField(max_digits=30, decimal_places=15, default=0)
+    current_location_lng = models.DecimalField(max_digits=30, decimal_places=15, default=0)
+    pickup_location_name = models.TextField(default='')
+    pickup_location_lat = models.DecimalField(max_digits=30, decimal_places=15, default=0)
+    pickup_location_lng = models.DecimalField(max_digits=30, decimal_places=15, default=0)
+    dropoff_location_name = models.TextField(default='')
+    dropoff_location_lat = models.DecimalField(max_digits=30, decimal_places=15, default=0)
+    dropoff_location_lng = models.DecimalField(max_digits=30, decimal_places=15, default=0)
+    distance_from_current_pickup = models.PositiveIntegerField(default=0)
+    distance_from_pickup_dropoff = models.PositiveIntegerField(default=0)
+    duration_from_current_pickup = models.PositiveIntegerField(default=0)
+    duration_from_pickup_dropoff = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -17,24 +23,39 @@ class Trip(models.Model):
 
 class LogEntry(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="logs")
-    timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, choices=[
         ('Driving', 'Driving'),
         ('On Duty (not driving)', 'On Duty (not driving)'),
         ('Off Duty', 'Off Duty'),
         ('Sleeping', 'Sleeping')
     ])
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    location_name = models.TextField(blank=True, null=True)
+    location_lat = models.DecimalField(max_digits=30, decimal_places=15)
+    location_lng = models.DecimalField(max_digits=30, decimal_places=15)
+    start_time = models.DateTimeField(blank=True, null=True)
+    end_time = models.DateTimeField(blank=True, null=True)
+    activity = models.TextField(blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Log Entry for Trip {self.trip.id} at {self.timestamp}"
+        return f"Log Entry for Trip {self.trip.id} at {self.created_at}"
     
 class UserStatus(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     status = models.TextField(blank=True, null=True)
+    trip = models.ForeignKey(Trip, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"User status {self.id} at {self.timestamp}"
+    
+class Theme(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dark_mode = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Theme: {self.dark_mode}"
+    
+    

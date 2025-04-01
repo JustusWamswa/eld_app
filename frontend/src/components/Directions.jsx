@@ -6,13 +6,18 @@ import { useModalStore } from '../stores/useModalStore'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import CloseButton from './Modals/ModalTitle'
 import ModalTitle from './Modals/ModalTitle'
+import { createTrip } from '../services/api'
+import { useNavigate } from 'react-router'
+import { useTripStore } from '../stores/useTripStore'
 
 function Directions() {
 
     const map = useMap()
     const routesLibrary = useMapsLibrary("routes")
-    const { newTripOpen, setNewTripOpen } = useModalStore()
+    const { newTripOpen, setNewTripOpen, setFsLoader } = useModalStore()
+    const { tripData, setTripData  } = useTripStore()
 
+    const [showSave, setShowSave] = useState()
     const [directionsService, setDirectionsService] = useState()
     const [directionsRenderer, setDirectionsRenderer] = useState()
     const [routes, setRoutes] = useState([])
@@ -36,12 +41,14 @@ function Directions() {
     const handleClose = () => setNewTripOpen(false)
     const handleOpen = () => setNewTripOpen(true)
 
+    const navigate = useNavigate()
+
     const calculateRoute = () => {
         if (!directionsService || !directionsRenderer) return
+        const currentLocation = currentLocationRef.current?.value || tripData?.current_location_name
+        const pickupLocation = pickupLocationRef.current?.value || tripData?.pickup_location_name
+        const dropoffLocation = dropoffLocationRef.current?.value || tripData?.dropoff_location_name
 
-        const currentLocation = currentLocationRef.current?.value
-        const pickupLocation = pickupLocationRef.current?.value
-        const dropoffLocation = dropoffLocationRef.current?.value
 
         if (!currentLocation || !pickupLocation || !dropoffLocation) {
             alert("Please enter all locations.")
@@ -59,7 +66,8 @@ function Directions() {
             .then((res) => {
                 directionsRenderer.setDirections(res)
                 setRoutes(res.routes)
-                handleClose()
+                setShowSave(true)
+                // handleClose()
             })
             .catch((error) => console.error("Error fetching directions:", error))
 
@@ -70,16 +78,53 @@ function Directions() {
         directionsRenderer.setRouteIndex(routeIndex)
     }, [routeIndex, directionsRenderer])
 
+    useEffect(() => {
+        if(window.location.pathname.includes('/trip') && Object.keys(tripData).length > 0) {
+            calculateRoute()
+        }
+    }, [directionsRenderer, directionsService, tripData])
+
+    const handleSave = () => {
+        setFsLoader(true)
+        const payload = {
+            'current_location_name': legs[0].start_address,
+            'current_location_lat': legs[0].start_location.lat(),
+            'current_location_lng': legs[0].start_location.lng(),
+            'pickup_location_name': legs[1].start_address,
+            'pickup_location_lat': legs[1].start_location.lat(),
+            'pickup_location_lng': legs[1].start_location.lng(),
+            'dropoff_location_name': legs[1].end_address,
+            'dropoff_location_lat': legs[1].end_location.lat(),
+            'dropoff_location_lng': legs[1].end_location.lng(),
+            'distance_from_current_pickup': legs[0].distance?.value,
+            'distance_from_pickup_dropoff': legs[1].distance?.value,
+            'duration_from_current_pickup': legs[0].duration?.value,
+            'duration_from_pickup_dropoff': legs[1].duration?.value
+        }
+        createTrip(payload)
+            .then((res) => {
+                setTripData(res.data)
+                setFsLoader(false)
+                setShowSave(false)
+                handleClose()
+                navigate(`/trip/${res.data.id}`)
+            })
+            .catch((err) => {
+                console.log(err)
+                setFsLoader(false)
+            })
+    }
+
 
     return (
         <>
-            <Button
+            {window.location.pathname == '/' && <Button
                 variant='contained'
                 sx={{ textTransform: 'capitalize', px: 3, py: 2, borderRadius: 3, fontSize: '1rem', bgcolor: 'secondary.main', position: 'absolute', top: 6, right: 6, zIndex: 50, width: 250, display: !newTripOpen ? 'block' : 'none' }}
                 onClick={handleOpen}
             >
                 Set Route
-            </Button>
+            </Button>}
 
             <Box display={newTripOpen ? 'block' : 'none'} bgcolor={'rgba(0,0,0,0.8)'} p={3} position={'absolute'} top={6} right={6} color={'white'} borderRadius={3} width={350} zIndex={50}>
                 <Stack >
@@ -111,9 +156,25 @@ function Directions() {
                             sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
                         />
                     </Autocomplete>
-                    <Button fullWidth variant="contained" onClick={calculateRoute} sx={{ mt: 2, textTransform: 'capitalize' }}>
+                    {/* <TextField
+                        // inputRef={dropoffLocationRef}
+                        placeholder="Current Cycle Used (Hrs)"
+                        type='number'
+                        fullWidth
+                        variant="outlined"
+                        sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                    /> */}
+                    {!showSave ? <Button fullWidth variant="contained" onClick={calculateRoute} sx={{ mt: 2, textTransform: 'capitalize' }}>
                         Get Directions
                     </Button>
+                        : <Stack direction={'row'} spacing={2}>
+                            <Button fullWidth variant="outlined" onClick={() => setShowSave(false)} sx={{ mt: 2, textTransform: 'capitalize', borderColor: 'rgba(255, 255, 255, 0.3)', color: 'white' }}>
+                                Cancel
+                            </Button>
+                            <Button fullWidth variant="contained" onClick={handleSave} sx={{ mt: 2, textTransform: 'capitalize' }}>
+                                Save
+                            </Button>
+                        </Stack>}
                 </Stack>
                 {/* <Stack display={newTripOpen ? 'none' : 'block'}>
                     {legs &&

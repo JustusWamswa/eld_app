@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { AdvancedMarker, APIProvider, Map } from '@vis.gl/react-google-maps'
-import { Box } from '@mui/material'
+import { Box, Tooltip } from '@mui/material'
 import Directions from './Directions'
 import { useThemeToggle } from '../App'
+import { useTripStore } from '../stores/useTripStore'
+import { statusOptions } from '../constants'
 
 function MapComp() {
 
   const [currentLocation, setCurrentLocation] = useState(null)
   const { darkMode } = useThemeToggle()
+  const { logEntries } = useTripStore()
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAP_API
   const position = { lat: 39.76118, lng: -75.62303 }
@@ -28,10 +31,20 @@ function MapComp() {
   }, [])
 
   return (
-    <Box height={'90vh'} position={'relative'}>
-      <APIProvider apiKey={apiKey} libraries={['places']}>
-        <Map defaultCenter={currentLocation || position} defaultZoom={5} mapId="DEMO_MAP_ID" fullscreenControl={false} colorScheme={darkMode ? 'DARK' : 'LIGHT'}>
-          <AdvancedMarker position={currentLocation || position} />
+    <Box height={'100%'} position={'relative'}>
+      <APIProvider apiKey={apiKey} libraries={['places']} >
+        <Map defaultCenter={currentLocation || position} defaultZoom={5} mapId="DEMO_MAP_ID" fullscreenControl={false} colorScheme={darkMode ? 'DARK' : 'LIGHT'} >
+          {/* <AdvancedMarker position={currentLocation || position} /> */}
+          {logEntries.map((log) => {
+            const icon = statusOptions.find((option) => option.option === log.activity)?.icon || "📍";
+            return (
+              <AdvancedMarker key={log.id} position={{ lat: Number(log.location_lat), lng: Number(log.location_lng) }}>
+                <Tooltip title={`${log.location_name} [${log.activity}]`}>
+                  <span style={{ fontSize: "1.8rem", backgroundColor: 'white', borderRadius: '50%', padding: 5 }}>{icon}</span>
+                </Tooltip>
+              </AdvancedMarker>
+            );
+          })}
           <Directions />
         </Map>
       </APIProvider>
