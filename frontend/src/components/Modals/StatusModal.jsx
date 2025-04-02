@@ -5,7 +5,7 @@ import CloseButton from './ModalTitle'
 import ModalTitle from './ModalTitle'
 import { useTripStore } from '../../stores/useTripStore'
 import { Autocomplete } from '@react-google-maps/api'
-import { changeUserStatus, createLog } from '../../services/api'
+import { createLogAndUpdateStatus } from '../../services/api'
 import { useParams } from 'react-router'
 import dayjs from 'dayjs'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
@@ -42,10 +42,9 @@ function StatusModal({ tempStatus }) {
     const handleSave = () => {
         if (!locationRef?.current?.value || !modalEntries?.date) {
             alert("Location and time are required")
-            return false
+            return
         }
         const place = autocompleteRef.current.getPlace()
-        console.log(modalEntries?.date)
 
         const payload = {
             "trip": id,
@@ -59,57 +58,24 @@ function StatusModal({ tempStatus }) {
             "remarks": modalEntries?.remarks || ""
         }
 
-        createLog(payload)
+        setLoading(true);
+        createLogAndUpdateStatus(payload)
             .then((res) => {
-                console.log(res)
-                setLogEntries([...logEntries, res.data.log])
+                setLogEntries([...logEntries, res.data.log]);
+                setStatus(res.data.user_status);
+                setLoading(false);
+                handleClose();
             })
             .catch((err) => {
-                console.log(err)
-                return false
-            })
+                console.log(err);
+                setLoading(false);
+            });
 
-        return true
-
-    }
-
-    const handleStartCurrentStatus = () => {
-        setLoading(true)
-        if (!handleSave()) {
-            setLoading(false)
-            return
-        }
-        changeUserStatus({ status: tempStatus.option, trip: id })
-            .then((res) => {
-                setStatus(res.data)
-                setLoading(false)
-                handleClose()
-            })
-            .catch((err) => {
-                console.log(err)
-                setLoading(false)
-            })
-    }
-
-    const handleEndCurrentStatus = () => {
-        setLoading(true)
-        changeUserStatus({ status: '', trip: null })
-            .then((res) => {
-                setStatus(res.data)
-                setLoading(false)
-                handleClose()
-            })
-            .catch((err) => {
-                console.log(err)
-                setLoading(false)
-            })
     }
 
     const handleChange = (e) => {
         setModalEntries(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
-
-    console.log(modalEntries)
 
 
 
@@ -151,8 +117,7 @@ function StatusModal({ tempStatus }) {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DateTimePicker']}>
                         <DateTimePicker
-                            disablePast
-
+                            // disablePast
                             value={modalEntries?.date}
                             onChange={(newValue) => setModalEntries(prev => ({ ...prev, date: newValue }))}
                             name='date'
@@ -164,10 +129,10 @@ function StatusModal({ tempStatus }) {
                 <TextField type='text' fullWidth sx={{ bgcolor: 'white' }} placeholder='Enter Remarks' value={modalEntries?.remarks} onChange={handleChange} name='remarks' />
                 {/* <Typography mt={2}>End Time</Typography>
                 <TextField type='datetime-local' fullWidth sx={{ bgcolor: 'white' }} /> */}
-                {loading ? <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize', bgcolor: 'red' }} loading >
-                    Start
+                {loading ? <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize', bgcolor: 'gray' }} >
+                    Loading ...
                 </Button>
-                    : <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize' }} onClick={handleStartCurrentStatus}>
+                    : <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize' }} onClick={handleSave}>
                         Start
                     </Button>}
             </Box>

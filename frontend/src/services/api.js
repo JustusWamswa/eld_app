@@ -33,13 +33,11 @@ const axiosRefresh = axios.create({
 const refreshAccessToken = async () => {
     try {
         const tokens = getAuthTokens()
-        console.log("Getting refresh token")
         const response = await axiosRefresh.post(`auth/token/refresh/`, {refresh: tokens.refresh})
         const newAccessToken = response.data.access
         localStorage.setItem("access_token", newAccessToken)
         return newAccessToken
     } catch (error) {
-        console.error("Failed to refresh access token:", error)
         localStorage.clear() // Logout user
         window.location.href = "/login"
         return null
@@ -55,9 +53,7 @@ api.interceptors.request.use(
             const now = Date.now() / 1000;
             if (decoded.exp < now) {
                 tokens.access = await refreshAccessToken();
-                console.log('heading to config')
             }
-            console.log('before config')
             if (!config.url.includes("auth/")) {
                 config.headers["Authorization"] = `Bearer ${tokens.access}`
             }
@@ -88,6 +84,9 @@ export const changeUserTheme = async (newTheme) => api.post(`api/theme/`, newThe
 
 // LogEntry
 export const createLog = async (log) => api.post(`api/log/`, log)
+export const updateLog = async (endTime, logId) => api.patch(`api/log/${logId}/`, endTime)
+export const createLogAndUpdateStatus = async (log) => api.post(`api/log-and-update-status/`, log);
+
 
 
 

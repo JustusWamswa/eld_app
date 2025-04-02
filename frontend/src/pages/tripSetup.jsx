@@ -19,7 +19,6 @@ function TripSetup() {
         setFsLoader(true)
         getTrip(id)
             .then((res) => {
-                console.log("From trip setup: ", res)
                 setTripData(res.data.trip)
                 setLogEntries(res.data.logs)
                 setFsLoader(false)

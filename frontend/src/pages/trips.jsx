@@ -9,7 +9,7 @@ import { useTripStore } from '../stores/useTripStore'
 
 function Trips() {
     const { setFsLoader } = useModalStore()
-    const { setTripData } = useTripStore()
+    const { setTripData, setLogEntries } = useTripStore()
     const [loading, setLoading] = useState(false)
     const [myTrips, setMyTrips] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
@@ -65,7 +65,8 @@ function Trips() {
         setLoading(true)
         getTrip(id)
             .then((res) => {
-                setTripData(res.data)
+                setTripData(res.data.trip)
+                setLogEntries(res.data.logs)
                 setSelectedTripId(id)
                 setLoading(false)
             })
@@ -122,7 +123,7 @@ function Trips() {
                         <Typography>Dropoff: {trip.dropoff_location_name}</Typography>
                         <Grid2 container spacing={2} height={'50vh'}>
                             <Grid2 size={6}>
-                                {selectedTripId == trip.id && <MapComp />}
+                                {selectedTripId == trip.id && <MapComp selectedTripId={selectedTripId} />}
                             </Grid2>
                         </Grid2>
                     </AccordionDetails>

@@ -4,7 +4,7 @@ from .views.user_status_views import get_trip_logs, generate_eld_logs, user_stat
 from .views.auth_views import signup, login
 from .views.trip_views import create_trip, get_trip_by_id, get_trips_by_user
 from .views.theme_views import theme_view
-from .views.log_views import create_log_entry
+from .views.log_views import create_log_entry, update_log_entry, log_and_update_status
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
@@ -27,6 +27,8 @@ urlpatterns = [
 
     # LogEntry
     path("api/log/", create_log_entry, name="create_log_entry"),
+    path("api/log/<int:log_id>/", update_log_entry, name="update_log_entry"),
+    path("api/log-and-update-status/", log_and_update_status, name="log_and_update_status"),
 
 
 

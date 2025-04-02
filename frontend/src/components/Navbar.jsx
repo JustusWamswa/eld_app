@@ -6,7 +6,7 @@ import { useAuth, useThemeToggle } from "../App"
 import { useLocation, useNavigate } from 'react-router'
 import { useTripStore } from '../stores/useTripStore'
 import { useModalStore } from '../stores/useModalStore'
-import { changeUserTheme } from '../services/api'
+import { changeUserStatus, changeUserTheme } from '../services/api'
 
 
 function Navbar() {
@@ -14,8 +14,8 @@ function Navbar() {
     const { darkMode, setDarkMode } = useThemeToggle()
     const { isAuthenticated, setIsAuthenticated } = useAuth()
     const [loading, setLoading] = useState(false)
-    const { status } = useTripStore()
-    const { setStatusOpen } = useModalStore()
+    const { status, setStatus, setLogEntries } = useTripStore()
+    const { setStatusOpen, setFsLoader } = useModalStore()
 
 
     const navigate = useNavigate()
@@ -42,6 +42,22 @@ function Navbar() {
             })
     }
 
+    const handleEndTrip = () => {
+            setFsLoader(true)
+            changeUserStatus({ status: '', trip: null })
+                .then((res) => {
+                    setStatus({status: res.data.status, trip: res.data.trip})
+                    setLogEntries([])
+                    setFsLoader(false)
+                    navigate('/')
+                })
+                .catch((err) => {
+                    console.log(err)
+                    setFsLoader(false)
+                })
+        }
+    
+
     const user = localStorage.getItem("user")
 
 
@@ -62,7 +78,7 @@ function Navbar() {
                             <>
                                 {status?.status && <Box border={'1px solid rgba(255,255,255,0.3)'} borderRadius={3} mr={2} px={2} py={0.5} minWidth={120} display={'flex'} alignItems={'center'}>
                                     <Typography variant='caption' color='white' width={'100%'} display={status?.status ? 'block' : 'none'} mr={1}>Status: {status?.status}</Typography>
-                                    <Button variant='contained' sx={{ px: 3, textTransform: 'capitalize', bgcolor: 'coral', borderRadius: 2, width: 130 }} onClick={handleStatusOpen} size='small'>End Trip</Button>
+                                    <Button variant='contained' sx={{ px: 3, textTransform: 'capitalize', bgcolor: 'coral', borderRadius: 2, width: 130 }} onClick={handleEndTrip} size='small'>End Trip</Button>
                                 </Box>}
                             </>}
                         {loading ? <Button variant='contained' sx={{ px: 3, textTransform: 'capitalize', borderRadius: 3 }} loading >Logout</Button>

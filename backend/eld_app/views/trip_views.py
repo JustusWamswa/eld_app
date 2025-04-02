@@ -10,6 +10,15 @@ from ..serializers import TripSerializer, LogEntrySerializer
 def create_trip(request):
     data = request.data
     data["user"] = request.user.id
+
+    # Ensure lat and lng are rounded to 8 decimal places
+    for key in data:
+        if "lat" in key or "lng" in key:
+            try:
+                data[key] = round(float(data[key]), 8)
+            except (ValueError, TypeError):
+                return Response({key: "Invalid latitude/longitude value"}, status=status.HTTP_400_BAD_REQUEST)
+
     serializer = TripSerializer(data=data)
     if serializer.is_valid():
         serializer.save()

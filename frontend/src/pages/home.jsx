@@ -20,7 +20,6 @@ function Home() {
     setFsLoader(true)
     getUserStatus()
     .then((res) => {
-      console.log(res)
       setStatus(res.data)
       setFsLoader(false)
       // navigate(`/trip/21`)
