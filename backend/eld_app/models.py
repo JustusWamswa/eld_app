@@ -35,6 +35,7 @@ class LogEntry(models.Model):
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
     activity = models.TextField(blank=True, null=True)
+    route_distance_from_start_point = models.PositiveIntegerField(default=0)
     remarks = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

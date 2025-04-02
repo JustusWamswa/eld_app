@@ -118,9 +118,16 @@ function Trips() {
                     </AccordionSummary>
                     {loading && <LinearProgress />}
                     <AccordionDetails>
-                        <Typography>Created At: {dateFormatter(trip.created_at)}</Typography>
-                        <Typography>Pickup: {trip.pickup_location_name}</Typography>
-                        <Typography>Dropoff: {trip.dropoff_location_name}</Typography>
+                        <Stack direction={'row'} justifyContent={'space-between'}>
+                            <Box>
+                                <Typography>Created At: {dateFormatter(trip.created_at)}</Typography>
+                                <Typography>Pickup: {trip.pickup_location_name}</Typography>
+                                <Typography>Dropoff: {trip.dropoff_location_name}</Typography>
+                            </Box>
+                            <Box>
+                                <Button>Generate logs</Button>
+                            </Box>
+                        </Stack>
                         <Grid2 container spacing={2} height={'50vh'}>
                             <Grid2 size={6}>
                                 {selectedTripId == trip.id && <MapComp selectedTripId={selectedTripId} />}
@@ -128,8 +135,8 @@ function Trips() {
                         </Grid2>
                     </AccordionDetails>
                     <AccordionActions>
-                        <Button>Cancel</Button>
-                        <Button>Agree</Button>
+                        {/* <Button>Cancel</Button>
+                        <Button>Generate logs</Button> */}
                     </AccordionActions>
                 </Accordion>
             ))}

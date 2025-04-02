@@ -15,7 +15,7 @@ function Directions() {
     const map = useMap()
     const routesLibrary = useMapsLibrary("routes")
     const { newTripOpen, setNewTripOpen, setFsLoader } = useModalStore()
-    const { tripData, setTripData  } = useTripStore()
+    const { tripData, setTripData, locationForRouteDistanceCalculation, setRouteDistanceFromStartPoint  } = useTripStore()
 
     const [showSave, setShowSave] = useState()
     const [directionsService, setDirectionsService] = useState()
@@ -114,6 +114,37 @@ function Directions() {
                 setFsLoader(false)
             })
     }
+
+    const getRouteDistance = (origin, destination) => {
+        if (!directionsService || !directionsRenderer) return
+    
+        if (!origin || !destination) {
+            alert("Please enter both origin and destination.")
+            return
+        }
+    
+        directionsService
+            .route({
+                origin,
+                destination,
+                travelMode: google.maps.TravelMode.DRIVING,
+            })
+            .then((res) => {
+                // Extract the distance from the response
+                const distance = res.routes[0].legs.reduce((total, leg) => total + leg.distance.value, 0) // in meters
+                setRouteDistanceFromStartPoint(distance)
+            })
+            .catch((error) => {
+                console.error("Error fetching directions:", error)
+            })
+    }
+    
+    useEffect(() => {
+        if (locationForRouteDistanceCalculation) {
+            getRouteDistance(tripData?.current_location_name, locationForRouteDistanceCalculation)
+        }
+
+    }, [locationForRouteDistanceCalculation])
 
 
     return (

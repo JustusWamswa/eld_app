@@ -17,7 +17,9 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 function StatusModal({ tempStatus }) {
 
     const { statusOpen, setStatusOpen } = useModalStore()
-    const { status, setStatus, logEntries, setLogEntries } = useTripStore()
+    const { status, setStatus, logEntries, setLogEntries, routeDistanceFromStartPoint,
+        setRouteDistanceFromStartPoint, locationForRouteDistanceCalculation, setLocationForRouteDistanceCalculation
+    } = useTripStore()
     const autocompleteRef = useRef(null)
     const [loading, setLoading] = useState()
     const [modalEntries, setModalEntries] = useState({})
@@ -35,12 +37,12 @@ function StatusModal({ tempStatus }) {
     const onPlaceChanged = () => {
         if (autocompleteRef.current) {
             const place = autocompleteRef.current.getPlace()
-            // Handle the selected place
+            setLocationForRouteDistanceCalculation(place.formatted_address)
         }
     }
 
     const handleSave = () => {
-        if (!locationRef?.current?.value || !modalEntries?.date) {
+        if (!locationRef?.current?.value || !modalEntries?.date || routeDistanceFromStartPoint == null) {
             alert("Location and time are required")
             return
         }
@@ -55,6 +57,7 @@ function StatusModal({ tempStatus }) {
             "start_time": new Date(modalEntries?.date),
             "end_time": new Date(),
             "activity": tempStatus.option,
+            "route_distance_from_start_point": routeDistanceFromStartPoint,
             "remarks": modalEntries?.remarks || ""
         }
 
@@ -64,6 +67,8 @@ function StatusModal({ tempStatus }) {
                 setLogEntries([...logEntries, res.data.log]);
                 setStatus(res.data.user_status);
                 setLoading(false);
+                setRouteDistanceFromStartPoint(null)
+                setLocationForRouteDistanceCalculation('')
                 handleClose();
             })
             .catch((err) => {
