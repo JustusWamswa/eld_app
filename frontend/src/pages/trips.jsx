@@ -6,6 +6,7 @@ import { useModalStore } from '../stores/useModalStore'
 import { dateFormatter } from '../utils/utils'
 import MapComp from '../components/MapComp'
 import { useTripStore } from '../stores/useTripStore'
+import Chart from '../components/Chart'
 
 function Trips() {
     const { setFsLoader } = useModalStore()
@@ -131,6 +132,9 @@ function Trips() {
                         <Grid2 container spacing={2} height={'50vh'}>
                             <Grid2 size={6}>
                                 {selectedTripId == trip.id && <MapComp selectedTripId={selectedTripId} />}
+                            </Grid2>
+                            <Grid2 size={6} height={'20vh'}>
+                                <Chart />
                             </Grid2>
                         </Grid2>
                     </AccordionDetails>
