@@ -55,7 +55,7 @@ function StatusModal({ tempStatus }) {
             "location_lat": place.geometry.location.lat(),
             "location_lng": place.geometry.location.lng(),
             "start_time": new Date(modalEntries?.date),
-            "end_time": new Date(),
+            "end_time": new Date(modalEntries?.date),
             "activity": tempStatus.option,
             "route_distance_from_start_point": routeDistanceFromStartPoint,
             "remarks": modalEntries?.remarks || ""

@@ -27,7 +27,7 @@ class LogEntry(models.Model):
         ('Driving', 'Driving'),
         ('On Duty (not driving)', 'On Duty (not driving)'),
         ('Off Duty', 'Off Duty'),
-        ('Sleeping', 'Sleeping')
+        ('Sleeper Berth', 'Sleeper Berth')
     ])
     location_name = models.TextField(blank=True, null=True)
     location_lat = models.DecimalField(max_digits=12, decimal_places=8)

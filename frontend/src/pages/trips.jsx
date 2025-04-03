@@ -18,6 +18,7 @@ function Trips() {
     const [sortBy, setSortBy] = useState('date') // 'date' or 'location'
     const [expanded, setExpanded] = useState(false)
     const [selectedTripId, setSelectedTripId] = useState(null)
+    const [logGenerated, setLogGenerated] = useState(false)
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false)
@@ -77,6 +78,10 @@ function Trips() {
             })
     }
 
+    const handleGenerateLog = () => {
+        setLogGenerated(true)
+    }
+
     return (
         <Box width={'90%'} mx={'auto'} mt={3} spacing={2}>
             <Stack direction={'row'} spacing={2} mb={2}>
@@ -106,7 +111,7 @@ function Trips() {
             </Stack>
 
             {/* Display Filtered and Sorted Trips */}
-            {sortedTrips.map((trip) => (
+            {sortedTrips.length > 0 ? (sortedTrips.map((trip) => (
                 <Accordion key={trip.id} expanded={expanded === trip.id} onChange={handleChange(trip.id)}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />} onClick={() => handleFetchTrip(trip.id)}>
                         <Typography component="span">
@@ -126,14 +131,14 @@ function Trips() {
                                 <Typography>Dropoff: {trip.dropoff_location_name}</Typography>
                             </Box>
                             <Box>
-                                <Button>Generate logs</Button>
+                                <Button onClick={handleGenerateLog}>Generate logs</Button>
                             </Box>
                         </Stack>
                         <Grid2 container spacing={2} height={'50vh'}>
-                            <Grid2 size={6}>
+                            <Grid2 size={logGenerated ? 6 : 12} borderRadius={3} overflow={'hidden'}>
                                 {selectedTripId == trip.id && <MapComp selectedTripId={selectedTripId} />}
                             </Grid2>
-                            <Grid2 size={6} height={'20vh'}>
+                            <Grid2 size={6} display={logGenerated ? 'block' : 'none'} bgcolor={'rgba(0,0,0,0.05)'} borderRadius={3}>
                                 <Chart />
                             </Grid2>
                         </Grid2>
@@ -143,7 +148,8 @@ function Trips() {
                         <Button>Generate logs</Button> */}
                     </AccordionActions>
                 </Accordion>
-            ))}
+                
+            ))) : <Box height={'50vh'} display={'flex'} justifyContent={'center'} alignItems={'center'}> No trips yet</Box>}
         </Box>
     )
 }

@@ -34,7 +34,7 @@ const totalHrs = Object.values(totalTimes).reduce((a, b) => a + b, 0)
 
 export default function Chart() {
     return (
-        <Box>
+        <Box mt={3}>
             <Typography variant="h6" textAlign="center">
                 ELD Log Form
             </Typography>
@@ -74,7 +74,7 @@ export default function Chart() {
                 }}
                 loading={false}
             />
-            <Box mt={2}>
+            {/* <Box mt={2}>
                 <Typography variant="body1">Remarks: Richmond, VA → Newark, NJ</Typography>
             </Box>
             <Box mt={2}>
@@ -84,7 +84,7 @@ export default function Chart() {
                         {label}: {time} hrs
                     </Typography>
                 ))}
-            </Box>
+            </Box> */}
         </Box>
     );
 }

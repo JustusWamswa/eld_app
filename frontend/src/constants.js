@@ -9,7 +9,7 @@ export const statusOptions = [
     { "option": "Repairing", "status": "On Duty (not driving)", "icon": "🛠️" },
     { "option": "Resting", "status": "Off Duty", "icon": "🛌" },
     { "option": "Servicing", "status": "On Duty (not driving)", "icon": "🔧" },
-    { "option": "Sleeper Berth", "status": "Sleeping", "icon": "😴" },
+    { "option": "Sleeper Berth", "status": "Sleeper Berth", "icon": "😴" },
     { "option": "Waiting", "status": "On Duty (not driving)", "icon": "⏳" },
 ]
 
