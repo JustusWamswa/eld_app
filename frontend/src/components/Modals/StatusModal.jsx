@@ -12,6 +12,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { useThemeToggle } from '../../App'
 
 
 function StatusModal({ tempStatus }) {
@@ -25,6 +26,7 @@ function StatusModal({ tempStatus }) {
     const [modalEntries, setModalEntries] = useState({})
     const locationRef = useRef()
     const { id } = useParams()
+    const { darkMode } = useThemeToggle()
 
     const handleClose = () => {
         setStatusOpen(false)
@@ -114,7 +116,8 @@ function StatusModal({ tempStatus }) {
                         placeholder="Enter Location"
                         fullWidth
                         variant="outlined"
-                        sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                        color='black'
+                        sx={{ mb: 2, bgcolor: !darkMode ? 'white' : 'black', borderRadius: 1 }}
                     />
                 </Autocomplete>
                 <Typography>Start Time</Typography>
@@ -126,14 +129,12 @@ function StatusModal({ tempStatus }) {
                             value={modalEntries?.date}
                             onChange={(newValue) => setModalEntries(prev => ({ ...prev, date: newValue }))}
                             name='date'
-                            sx={{ bgcolor: 'white' }}
+                            sx={{ bgcolor: !darkMode ? 'white' : 'black' }}
                         />
                     </DemoContainer>
                 </LocalizationProvider>
                 <Typography sx={{ mt: 2 }}>Remarks</Typography>
-                <TextField type='text' fullWidth sx={{ bgcolor: 'white' }} placeholder='Enter Remarks' value={modalEntries?.remarks} onChange={handleChange} name='remarks' />
-                {/* <Typography mt={2}>End Time</Typography>
-                <TextField type='datetime-local' fullWidth sx={{ bgcolor: 'white' }} /> */}
+                <TextField type='text' fullWidth sx={{ bgcolor: !darkMode ? 'white' : 'black' }} placeholder='Enter Remarks' value={modalEntries?.remarks} onChange={handleChange} name='remarks' />
                 {loading ? <Button fullWidth variant="contained" sx={{ mt: 4, textTransform: 'capitalize', bgcolor: 'gray' }} >
                     Loading ...
                 </Button>

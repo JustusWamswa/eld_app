@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Divider, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useState } from 'react'
 import { useModalStore } from '../stores/useModalStore'
 import { useThemeToggle } from '../App'
@@ -17,8 +17,11 @@ function TripEntries() {
         setTempStatus(status)
     }
 
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
     return (
-        <Stack maxHeight={'90vh'} minHeight={'85vh'} p={2} sx={{ overflowY: 'scroll' }}>
+        <Stack maxHeight={isMobile ? '45vh' : '90vh'} p={2} sx={{ overflowY: 'scroll' }}>
             {statusOptions.map((statusOption) => (
                 <Button key={statusOption.option} variant='contained' sx={{
                     textTransform: 'capitalize', p: 3, fontSize: '1rem',

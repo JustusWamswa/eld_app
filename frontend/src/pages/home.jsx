@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router'
 
 function Home() {
 
-  const { setStatus } = useTripStore()
+  const { setStatus, setLogEntries } = useTripStore()
   const { setFsLoader } = useModalStore()
 
   const navigate = useNavigate()
@@ -22,6 +22,7 @@ function Home() {
     .then((res) => {
       setStatus(res.data)
       setFsLoader(false)
+      setLogEntries([])
       // navigate(`/trip/21`)
       if(res.data.status) navigate(`/trip/${res.data.trip}`)
     })

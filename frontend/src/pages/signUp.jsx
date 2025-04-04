@@ -1,4 +1,4 @@
-import { Box, Button, FilledInput, FormControl, IconButton, Input, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Typography } from '@mui/material'
+import { Box, Button, FilledInput, FormControl, IconButton, Input, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useState } from 'react'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
@@ -46,9 +46,11 @@ function SignUp() {
             })
     }
 
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
     return (
-        <Box border={'1px solid rgba(0,0,0,0.4)'} borderRadius={5} px={3} py={5} width={'35%'} marginLeft={'50%'} sx={{ translate: '-50%' }} mt={5} >
+        <Box border={'1px solid rgba(0,0,0,0.4)'} borderRadius={5} px={3} py={5} width={isMobile ? '80%' : '35%'} marginLeft={'50%'} sx={{ translate: '-50%' }} mt={5} >
             <Typography variant='h5' align='center' mb={4}>Create Account</Typography>
             <FormControl sx={{ width: '100%' }} variant="outlined" size='small'>
                 <InputLabel htmlFor="outlined-adornment-email">Email</InputLabel>
@@ -85,7 +87,7 @@ function SignUp() {
                 />
             </FormControl>
             {loading ? <Button fullWidth variant='contained' sx={{ textTransform: 'capitalize', mb: 3 }} loading >Create</Button>
-            : <Button fullWidth variant='contained' sx={{ textTransform: 'capitalize', mb: 3 }} onClick={() => signup(signUpData)}>Create</Button>}
+                : <Button fullWidth variant='contained' sx={{ textTransform: 'capitalize', mb: 3 }} onClick={() => signup(signUpData)}>Create</Button>}
             {signUpErr?.error && <Typography variant='caption' color='red'>{signUpErr.error}</Typography>} <br />
             <Link href='/login' variant='caption'>Already have an account? Sign in</Link>
         </Box>

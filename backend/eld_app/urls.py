@@ -32,7 +32,7 @@ urlpatterns = [
     path("api/log-and-update-status/", log_and_update_status, name="log_and_update_status"),
 
     # Compliance
-    path("api/generate-compliance-log/", generate_compliance_log, name="generate_compliance_log"),
+    path("api/generate-compliance-log/<int:trip_id>/", generate_compliance_log, name="generate_compliance_log"),
 
 
 ]

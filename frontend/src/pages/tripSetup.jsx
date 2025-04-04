@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import MapComp from '../components/MapComp'
 import TripEntries from '../components/TripEntries'
-import { Grid2 } from '@mui/material'
+import { Grid2, useMediaQuery, useTheme } from '@mui/material'
 import { getTrip, getUserStatus } from '../services/api'
 import { useTripStore } from '../stores/useTripStore'
 import { useModalStore } from '../stores/useModalStore'
@@ -29,13 +29,16 @@ function TripSetup() {
             })
     }, [])
 
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
     return (
         <>
             <Grid2 container spacing={1} mt={1} height={'90vh'}>
-                <Grid2 size={9} >
+                <Grid2 size={isMobile ? 12 : 9} height={isMobile ? '50%' : '100%'} >
                     <MapComp />
                 </Grid2>
-                <Grid2 size={3}>
+                <Grid2 size={isMobile ? 12 : 3}>
                     <TripEntries />
                 </Grid2>
             </Grid2>

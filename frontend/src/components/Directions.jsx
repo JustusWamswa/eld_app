@@ -9,6 +9,7 @@ import ModalTitle from './Modals/ModalTitle'
 import { createTrip } from '../services/api'
 import { useNavigate } from 'react-router'
 import { useTripStore } from '../stores/useTripStore'
+import { useThemeToggle } from '../App'
 
 function Directions() {
 
@@ -22,6 +23,7 @@ function Directions() {
     const [directionsRenderer, setDirectionsRenderer] = useState()
     const [routes, setRoutes] = useState([])
     const [routeIndex, setRouteIndex] = useState(0)
+    const { darkMode } = useThemeToggle()
 
     // Autocomplete refs
     const currentLocationRef = useRef()
@@ -166,7 +168,7 @@ function Directions() {
                             placeholder="Current Location"
                             fullWidth
                             variant="outlined"
-                            sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                            sx={{ mb: 2, bgcolor: !darkMode ? 'white' : 'black', borderRadius: 1 }}
                         />
                     </Autocomplete>
                     <Autocomplete>
@@ -175,7 +177,7 @@ function Directions() {
                             placeholder="Pickup Location"
                             fullWidth
                             variant="outlined"
-                            sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                            sx={{ mb: 2, bgcolor: !darkMode ? 'white' : 'black', borderRadius: 1 }}
                         />
                     </Autocomplete>
                     <Autocomplete>
@@ -184,17 +186,9 @@ function Directions() {
                             placeholder="Dropoff Location"
                             fullWidth
                             variant="outlined"
-                            sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                            sx={{ mb: 2, bgcolor: !darkMode ? 'white' : 'black', borderRadius: 1 }}
                         />
                     </Autocomplete>
-                    {/* <TextField
-                        // inputRef={dropoffLocationRef}
-                        placeholder="Current Cycle Used (Hrs)"
-                        type='number'
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
-                    /> */}
                     {!showSave ? <Button fullWidth variant="contained" onClick={calculateRoute} sx={{ mt: 2, textTransform: 'capitalize' }}>
                         Get Directions
                     </Button>

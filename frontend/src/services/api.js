@@ -87,6 +87,9 @@ export const createLog = async (log) => api.post(`api/log/`, log)
 export const updateLog = async (endTime, logId) => api.patch(`api/log/${logId}/`, endTime)
 export const createLogAndUpdateStatus = async (log) => api.post(`api/log-and-update-status/`, log);
 
+// Compliance
+export const generateComplianceLog = async (id) => api.get(`api/generate-compliance-log/${id}/`)
+
 
 
 

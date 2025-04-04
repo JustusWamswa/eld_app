@@ -1,12 +1,13 @@
-import { Accordion, AccordionDetails, AccordionSummary, Stack, Typography, TextField, Button, MenuItem, Select, FormControl, InputLabel, Box, LinearProgress, Grid2, AccordionActions } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Stack, Typography, TextField, Button, MenuItem, Select, FormControl, InputLabel, Box, LinearProgress, Grid2, AccordionActions, Skeleton, CircularProgress, useTheme, useMediaQuery } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { getTrip, getUserTrips } from '../services/api'
+import { generateComplianceLog, getTrip, getUserTrips } from '../services/api'
 import { useModalStore } from '../stores/useModalStore'
 import { dateFormatter } from '../utils/utils'
 import MapComp from '../components/MapComp'
 import { useTripStore } from '../stores/useTripStore'
 import Chart from '../components/Chart'
+import { useThemeToggle } from '../App'
 
 function Trips() {
     const { setFsLoader } = useModalStore()
@@ -19,6 +20,9 @@ function Trips() {
     const [expanded, setExpanded] = useState(false)
     const [selectedTripId, setSelectedTripId] = useState(null)
     const [logGenerated, setLogGenerated] = useState(false)
+    const [eldDataByDay, setEldDataByDay] = useState([])
+    const [violations, setViolations] = useState([])
+    const { darkMode } = useThemeToggle()
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false)
@@ -65,6 +69,7 @@ function Trips() {
     // Fetch trip by id
     const handleFetchTrip = (id) => {
         setLoading(true)
+        setLogGenerated(false)
         getTrip(id)
             .then((res) => {
                 setTripData(res.data.trip)
@@ -78,25 +83,41 @@ function Trips() {
             })
     }
 
-    const handleGenerateLog = () => {
+    const handleGenerateLog = (id) => {
         setLogGenerated(true)
+        setLoading(true)
+        generateComplianceLog(id)
+            .then((res) => {
+                console.log(res)
+                setEldDataByDay(res.data.eld_data_by_day)
+                setViolations(res.data.violations)
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+            })
     }
+
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
 
     return (
         <Box width={'90%'} mx={'auto'} mt={3} spacing={2}>
-            <Stack direction={'row'} spacing={2} mb={2}>
+            <Stack direction={isMobile ? 'column' : 'row'} spacing={2} mb={2}>
                 {/* Search Input */}
                 <TextField
                     label="Search by Date or Location"
                     variant="outlined"
-                    sx={{ width: '50%' }}
+                    sx={{ width: isMobile ? '100%' : '50%' }}
                     size='small'
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
 
                 {/* Sorting Controls */}
-                <Stack direction="row" spacing={2} width={'50%'}>
+                <Stack direction="row" spacing={2} width={isMobile ? '100%' : '50%'}>
                     <FormControl fullWidth>
                         <Select size='small' value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                             <MenuItem value="date">Sort By Date</MenuItem>
@@ -131,26 +152,39 @@ function Trips() {
                                 <Typography>Dropoff: {trip.dropoff_location_name}</Typography>
                             </Box>
                             <Box>
-                                <Button onClick={handleGenerateLog}>Generate logs</Button>
+                                <Button color='white' onClick={() => handleGenerateLog(trip.id)}>Generate logs</Button>
                             </Box>
                         </Stack>
-                        <Grid2 container spacing={2} height={'50vh'}>
-                            <Grid2 size={logGenerated ? 6 : 12} borderRadius={3} overflow={'hidden'}>
+                        <Grid2 container spacing={2} height={logGenerated && isMobile ? '65vh' : isMobile ? '30vh' : '50vh'}>
+                            <Grid2 size={logGenerated && isMobile ? 12 : logGenerated ? 6 : 12} borderRadius={3} overflow={'hidden'} height={isMobile ? '30vh' : '50vh'}>
                                 {selectedTripId == trip.id && <MapComp selectedTripId={selectedTripId} />}
                             </Grid2>
-                            <Grid2 size={6} display={logGenerated ? 'block' : 'none'} bgcolor={'rgba(0,0,0,0.05)'} borderRadius={3}>
-                                <Chart />
+                            <Grid2 size={isMobile ? 12 : 6} height={isMobile ? '30vh' : '50vh'} display={logGenerated ? 'block' : 'none'} bgcolor={'rgba(0,0,0,0.05)'} borderRadius={3} sx={{ overflowY: 'scroll' }}>
+                                {!loading &&
+                                    (selectedTripId == trip.id &&
+                                        eldDataByDay.length > 0 &&
+                                        <>
+                                            {eldDataByDay.map((eldData, index) => (
+                                                <Chart key={index} eldData={eldData} />
+                                            ))}
+                                            <Box my={2} px={5}>
+                                                <Typography variant="h6">Violations</Typography>
+                                                {violations.map((violation, index) => (
+                                                    <Typography key={index} variant="body1">
+                                                        {violations.length > 0 ? violation : 'None'}
+                                                    </Typography>
+                                                ))}
+                                            </Box>
+                                        </>
+                                    )}
                             </Grid2>
                         </Grid2>
                     </AccordionDetails>
-                    <AccordionActions>
-                        {/* <Button>Cancel</Button>
-                        <Button>Generate logs</Button> */}
-                    </AccordionActions>
                 </Accordion>
-                
-            ))) : <Box height={'50vh'} display={'flex'} justifyContent={'center'} alignItems={'center'}> No trips yet</Box>}
-        </Box>
+
+            ))) : <Box height={'50vh'} display={'flex'} justifyContent={'center'} alignItems={'center'}> No trips yet</Box>
+            }
+        </Box >
     )
 }
 

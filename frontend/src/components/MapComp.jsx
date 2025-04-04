@@ -35,7 +35,7 @@ function MapComp({ selectedTripId }) {
   return (
     <Box height={'100%'} position={'relative'}>
       <APIProvider apiKey={apiKey} libraries={['places']} >
-        <Map defaultCenter={currentLocation || position} defaultZoom={5} mapId="DEMO_MAP_ID" fullscreenControl={true} colorScheme={darkMode ? 'DARK' : 'LIGHT'} >
+        <Map defaultCenter={currentLocation || position} defaultZoom={5} mapId="DEMO_MAP_ID" mapTypeControl={false} fullscreenControl={true} colorScheme={darkMode ? 'DARK' : 'LIGHT'} >
           {/* <AdvancedMarker position={currentLocation || position} /> */}
           {logEntries.map((log) => {
             const icon = statusOptions.find((option) => option.option === log.activity)?.icon || "📍";
