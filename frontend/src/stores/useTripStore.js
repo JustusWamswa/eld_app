@@ -13,4 +13,6 @@ export const useTripStore = create((set) => ({
     setLocationForRouteDistanceCalculation: (newValue) => set({locationForRouteDistanceCalculation: newValue}),
     routeDistanceFromStartPoint: null,
     setRouteDistanceFromStartPoint: (newValue) => set({routeDistanceFromStartPoint: newValue}),
+    cycleHoursUsed: 0,
+    setCycleHoursUsed: (newValue) => set({cycleHoursUsed: newValue}),
 }))

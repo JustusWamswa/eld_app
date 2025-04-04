@@ -90,6 +90,9 @@ export const createLogAndUpdateStatus = async (log) => api.post(`api/log-and-upd
 // Compliance
 export const generateComplianceLog = async (id) => api.get(`api/generate-compliance-log/${id}/`)
 
+// Cycle hours
+export const getCycleHoursUsed = async (id) => api.get(`api/on-duty-hours-8-days/`)
+
 
 
 

@@ -23,7 +23,6 @@ function Home() {
       setStatus(res.data)
       setFsLoader(false)
       setLogEntries([])
-      // navigate(`/trip/21`)
       if(res.data.status) navigate(`/trip/${res.data.trip}`)
     })
     .catch((err) => {

@@ -62,7 +62,7 @@ export const dateFormatter = (isoString) => {
 
   // Extract day, month, and year
   const day = date.getDate();
-  const month = date.toLocaleString(undefined, { month: 'long' }); // Uses user's local settings
+  const month = date.toLocaleString(undefined, { month: 'long' }); 
   const year = date.getFullYear();
 
   // Extract local time in 12-hour format with AM/PM

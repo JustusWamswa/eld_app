@@ -1,11 +1,12 @@
 from django.urls import path, include
 from .views.main_view import index
-from .views.user_status_view import get_trip_logs, generate_eld_logs, user_status_view
+from .views.user_status_view import user_status_view
 from .views.auth_views import signup, login
 from .views.trip_view import create_trip, get_trip_by_id, get_trips_by_user
 from .views.theme_view import theme_view
 from .views.log_view import create_log_entry, update_log_entry, log_and_update_status
 from .views.compliance_view import generate_compliance_log
+from .views.cycle_hours_view import get_total_on_duty_hours_8_days
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
@@ -33,6 +34,9 @@ urlpatterns = [
 
     # Compliance
     path("api/generate-compliance-log/<int:trip_id>/", generate_compliance_log, name="generate_compliance_log"),
+
+    # Cycle hours
+     path("api/on-duty-hours-8-days/", get_total_on_duty_hours_8_days, name="get_total_on_duty_hours_8_days"),
 
 
 ]

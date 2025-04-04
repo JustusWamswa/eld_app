@@ -121,7 +121,6 @@ function StatusModal({ tempStatus }) {
                     />
                 </Autocomplete>
                 <Typography>Start Time</Typography>
-                {/* <TextField type='datetime-local' fullWidth sx={{ bgcolor: 'white' }} value={modalEntries?.date} onChange={handleChange} name='date' /> */}
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DateTimePicker']}>
                         <DateTimePicker

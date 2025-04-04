@@ -14,7 +14,7 @@ function Navbar() {
     const { darkMode, setDarkMode } = useThemeToggle()
     const { isAuthenticated, setIsAuthenticated } = useAuth()
     const [loading, setLoading] = useState(false)
-    const { status, setStatus, setLogEntries } = useTripStore()
+    const { status, setStatus, setLogEntries, cycleHoursUsed } = useTripStore()
     const { setStatusOpen, setFsLoader } = useModalStore()
 
 
@@ -43,20 +43,20 @@ function Navbar() {
     }
 
     const handleEndTrip = () => {
-            setFsLoader(true)
-            changeUserStatus({ status: '', trip: null })
-                .then((res) => {
-                    setStatus({status: res.data.status, trip: res.data.trip})
-                    setLogEntries([])
-                    setFsLoader(false)
-                    navigate('/')
-                })
-                .catch((err) => {
-                    console.log(err)
-                    setFsLoader(false)
-                })
-        }
-    
+        setFsLoader(true)
+        changeUserStatus({ status: '', trip: null })
+            .then((res) => {
+                setStatus({ status: res.data.status, trip: res.data.trip })
+                setLogEntries([])
+                setFsLoader(false)
+                navigate('/')
+            })
+            .catch((err) => {
+                console.log(err)
+                setFsLoader(false)
+            })
+    }
+
 
     const user = localStorage.getItem("user")
 
@@ -77,6 +77,7 @@ function Navbar() {
             <Box display={'flex'} alignItems={'center'} justifyContent={'center'}>
                 {isAuthenticated &&
                     <Box display={'flex'} alignItems={'center'}>
+                        <Typography variant='caption' color='white' display={!isMobile ? 'block' : 'none'} mr={3}>Cycle Hours Used: {cycleHoursUsed}</Typography>
                         {pathname.includes('/trip/') &&
                             <>
                                 {status?.status && <Box border={'1px solid rgba(255,255,255,0.3)'} borderRadius={3} mr={2} px={2} py={0.5} minWidth={120} display={'flex'} alignItems={'center'} position={isMobile ? 'absolute' : 'relative'} left={isMobile && 3} top={isMobile && 70} zIndex={1000} bgcolor={isMobile ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)'}>

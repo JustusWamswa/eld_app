@@ -10,7 +10,8 @@ import PageNotFound from "./pages/pageNotFound"
 import { getTheme } from "./utils/utils"
 import Trips from "./pages/trips"
 import TripSetup from "./pages/tripSetup"
-import { getUserTheme } from "./services/api"
+import { getCycleHoursUsed, getUserTheme } from "./services/api"
+import { useTripStore } from "./stores/useTripStore"
 
 const ThemeContext = createContext()
 const AuthContext = createContext()
@@ -19,6 +20,7 @@ function App() {
 
   const [darkMode, setDarkMode] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { logEntries, setCycleHoursUsed } = useTripStore()
 
   useEffect(() => {
     const token = localStorage.getItem("access_token")
@@ -29,6 +31,17 @@ function App() {
       })
       .catch((err) => console.log(err))
   }, [])
+
+  useEffect(() => {
+    getCycleHoursUsed()
+    .then((res) => {
+      setCycleHoursUsed(res.data.total_on_duty_hours_last_8_days)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
+  }, [logEntries])
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
