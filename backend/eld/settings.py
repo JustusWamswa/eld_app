@@ -36,7 +36,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'https://outstanding-insight-production.up.railway.app/',
+    'outstanding-insight-production.up.railway.app',
 ]
 
 
