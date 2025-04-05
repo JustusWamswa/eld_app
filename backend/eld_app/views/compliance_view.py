@@ -24,9 +24,6 @@ def generate_compliance_log(request, trip_id):
     """
     Generates HOS compliance log for a specific trip, including ELD data.
     """
-    today = now().date()
-    eight_days_ago = today - timedelta(days=8)
-
     # Fetch the trip
     trip = Trip.objects.filter(id=trip_id).first()
     if not trip:

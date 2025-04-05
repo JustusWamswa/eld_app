@@ -41,6 +41,8 @@ function Trips() {
             })
     }, [])
 
+    console.log(myTrips)
+
     // Filter Trips based on search query (date or location)
     const filteredTrips = myTrips?.filter((trip) => {
         const formattedDate = dateFormatter(trip.created_at).toLowerCase()
@@ -146,10 +148,11 @@ function Trips() {
                     {loading && <LinearProgress />}
                     <AccordionDetails>
                         <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Box>
-                                <Typography>Created At: {dateFormatter(trip.created_at)}</Typography>
+                            <Box mb={1}>
                                 <Typography>Pickup: {trip.pickup_location_name}</Typography>
                                 <Typography>Dropoff: {trip.dropoff_location_name}</Typography>
+                                <Typography>Distance: {((trip.distance_from_current_pickup + trip.distance_from_pickup_dropoff) / 1609.34).toFixed(2)} miles</Typography>
+                                <Typography>Estimated driving duration: {((trip.duration_from_current_pickup + trip.duration_from_pickup_dropoff) / 3600).toFixed(2)} hrs</Typography>
                             </Box>
                             <Box>
                                 <Button color='white' onClick={() => handleGenerateLog(trip.id)}>Generate logs</Button>
@@ -169,12 +172,17 @@ function Trips() {
                                             ))}
                                             <Box my={2} px={5}>
                                                 <Typography variant="h6">Violations</Typography>
-                                                {violations.map((violation, index) => (
-                                                    <Typography key={index} variant="body1">
-                                                        {violations.length > 0 ? violation : 'None'}
-                                                    </Typography>
-                                                ))}
+                                                {violations.length > 0 ? (
+                                                    violations.map((violation, index) => (
+                                                        <Typography key={index} variant="body1">
+                                                            {violation}
+                                                        </Typography>
+                                                    ))
+                                                ) : (
+                                                    <Typography variant="body1">None</Typography>
+                                                )}
                                             </Box>
+
                                         </>
                                     )}
                             </Grid2>

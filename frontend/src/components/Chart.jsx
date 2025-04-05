@@ -85,10 +85,19 @@ export default function Chart({ eldData }) {
             />
             <Box px={5}>
                 <Typography variant="h6">Remarks</Typography>
-                {eldData.map((data) => (
-                    <Typography variant="body1">{data.remarks && `${data.start} - ${data.end} → ${data.remarks}`}</Typography>
-                ))}
+                {eldData.some((data) => data.remarks) ? (
+                    eldData.map((data, index) =>
+                        data.remarks ? (
+                            <Typography key={index} variant="body1">
+                                {`${data.start} - ${data.end} → ${data.remarks}`}
+                            </Typography>
+                        ) : null
+                    )
+                ) : (
+                    <Typography variant="body1">None</Typography>
+                )}
             </Box>
+
         </Box>
     );
 }

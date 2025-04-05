@@ -48,7 +48,7 @@ def get_trip_by_id(request, trip_id):
 @permission_classes([IsAuthenticated])
 def get_trips_by_user(request):
     trips = Trip.objects.filter(user=request.user)
-    data = trips.values("id", "current_location_name", "pickup_location_name", "dropoff_location_name", "created_at")
+    data = trips.values()
     return Response(list(data))
 
 
