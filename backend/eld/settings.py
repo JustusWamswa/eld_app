@@ -14,6 +14,8 @@ from pathlib import Path
 from os import getenv
 from dotenv import load_dotenv
 from datetime import timedelta
+import dj_database_url
+
 
 
 load_dotenv()
@@ -126,18 +128,23 @@ WSGI_APPLICATION = 'eld.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': getenv('PGDATABASE'),
-    'USER': getenv('PGUSER'),
-    'PASSWORD': getenv('PGPASSWORD'),
-    'HOST': getenv('PGHOST'),
-    'PORT': getenv('PGPORT', 5432),
-    'OPTIONS': {
-      'sslmode': 'require',
-    },
-    'DISABLE_SERVER_SIDE_CURSORS': True,
-  }
+#     'default': {
+#     'ENGINE': 'django.db.backends.postgresql',
+#     'NAME': getenv('PGDATABASE'),
+#     'USER': getenv('PGUSER'),
+#     'PASSWORD': getenv('PGPASSWORD'),
+#     'HOST': getenv('PGHOST'),
+#     'PORT': getenv('PGPORT', 5432),
+#     'OPTIONS': {
+#       'sslmode': 'require',
+#     },
+#     'DISABLE_SERVER_SIDE_CURSORS': True,
+#   }
+    'default': dj_database_url.config(
+            default=getenv('DATABASE_URL'), 
+            conn_max_age=600, 
+            ssl_require=True
+        )
 }
 
 
