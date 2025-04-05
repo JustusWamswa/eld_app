@@ -77,6 +77,7 @@ export const changeUserStatus = async (newStatus) => api.post(`api/user-status/`
 export const createTrip = async (trip) => api.post(`api/trip/`, trip)
 export const getTrip = async (id) => api.get(`api/trip/${id}/`)
 export const getUserTrips = async () => api.get(`api/trip/mytrips/`) 
+export const endTrip = async (trip) => api.post(`api/trip/end-trip/`, trip)
 
 // Theme
 export const getUserTheme = async () => api.get(`api/theme/`)

@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views.main_view import index
 from .views.user_status_view import user_status_view
 from .views.auth_views import signup, login
-from .views.trip_view import create_trip, get_trip_by_id, get_trips_by_user
+from .views.trip_view import create_trip, get_trip_by_id, get_trips_by_user, end_trip
 from .views.theme_view import theme_view
 from .views.log_view import create_log_entry, update_log_entry, log_and_update_status
 from .views.compliance_view import generate_compliance_log
@@ -23,6 +23,7 @@ urlpatterns = [
     path("api/trip/", create_trip, name="create_trip"),
     path("api/trip/<int:trip_id>/", get_trip_by_id, name="get_trip_by_id"),
     path("api/trip/mytrips/", get_trips_by_user, name="get_trips_by_user"),
+    path("api/trip/end-trip/", end_trip, name="end_trip"),
 
     # Theme
     path("api/theme/", theme_view, name="theme_view"),

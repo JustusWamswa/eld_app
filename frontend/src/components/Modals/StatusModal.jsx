@@ -1,4 +1,4 @@
-import { Box, Button, LinearProgress, Modal, TextField, Typography } from '@mui/material'
+import { Box, Button, LinearProgress, Modal, TextField, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { useModalStore } from '../../stores/useModalStore'
 import CloseButton from './ModalTitle'
@@ -84,7 +84,8 @@ function StatusModal({ tempStatus }) {
         setModalEntries(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
-
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
     return (
         <Modal
@@ -97,7 +98,7 @@ function StatusModal({ tempStatus }) {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: '25%',
+                width: isMobile ? '80%' : '25%',
                 minHeight: '35%',
                 bgcolor: 'rgba(0,0,0,0.8)',
                 color: 'white',

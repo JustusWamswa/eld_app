@@ -70,54 +70,6 @@ def update_log_entry(request, log_id):
 def log_and_update_status(request):
     user = request.user
     data = request.data
-
-    trip_id = data.get("trip")
-    status = data.get("status")
-    location_name = data.get("location_name")
-    location_lat = round(data.get("location_lat", 0), 8)
-    location_lng = round(data.get("location_lng", 0), 8)
-    start_time = data.get("start_time")
-    activity = data.get("activity")
-    remarks = data.get("remarks", "")
-
-    # Fetch the last log entry for the trip
-    last_log = LogEntry.objects.filter(trip_id=trip_id).order_by("-start_time").first()
-
-    with transaction.atomic():  # Ensures all or nothing execution
-        # Update last log's end_time if it exists
-        if last_log:
-            last_log.end_time = start_time
-            last_log.save()
-
-        # Create new log entry
-        log_entry = LogEntry.objects.create(
-            trip_id=trip_id,
-            status=status,
-            location_name=location_name,
-            location_lat=location_lat,
-            location_lng=location_lng,
-            start_time=start_time,
-            activity=activity,
-            remarks=remarks
-        )
-
-        # Update user status
-        user_status, created = UserStatus.objects.update_or_create(
-            user=user, defaults={"status": status, "trip_id": trip_id}
-        )
-
-    return Response({
-        "message": "Log created and status updated",
-        "log": LogEntrySerializer(log_entry).data,
-        "user_status": UserStatusSerializer(user_status).data
-    }, status=status.HTTP_201_CREATED)
-
-
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def log_and_update_status(request):
-    user = request.user
-    data = request.data
     trip_id = data.get("trip")
 
     if not trip_id:

@@ -5,6 +5,7 @@ import { useThemeToggle } from '../App'
 import { useTripStore } from '../stores/useTripStore'
 import StatusModal from './Modals/StatusModal'
 import { statusOptions } from '../constants'
+import EndStatusModal from './Modals/EndStatusModal'
 
 function TripEntries() {
 
@@ -34,6 +35,7 @@ function TripEntries() {
                 </Button>
             ))}
             <StatusModal tempStatus={tempStatus} />
+            <EndStatusModal tempStatus={tempStatus} />
         </Stack>
     )
 }
