@@ -68,30 +68,30 @@ api.interceptors.request.use(
 )
 
 // User
-export const createUser = async (credentials) => api.post(`auth/signup/`, credentials)
-export const loginUser = async (credentials) => api.post(`auth/login/`, credentials)
-export const getUserStatus = async () => api.get(`api/user-status/`)
-export const changeUserStatus = async (newStatus) => api.post(`api/user-status/`, newStatus)
+export const createUser = async (credentials) => api.post(`${url}auth/signup/`, credentials)
+export const loginUser = async (credentials) => api.post(`${url}auth/login/`, credentials)
+export const getUserStatus = async () => api.get(`${url}api/user-status/`)
+export const changeUserStatus = async (newStatus) => api.post(`${url}api/user-status/`, newStatus)
 
 // Trip
-export const createTrip = async (trip) => api.post(`api/trip/`, trip)
-export const getTrip = async (id) => api.get(`api/trip/${id}/`)
-export const getUserTrips = async () => api.get(`api/trip/mytrips/`) 
+export const createTrip = async (trip) => api.post(`${url}api/trip/`, trip)
+export const getTrip = async (id) => api.get(`${url}api/trip/${id}/`)
+export const getUserTrips = async () => api.get(`${url}api/trip/mytrips/`) 
 
 // Theme
-export const getUserTheme = async () => api.get(`api/theme/`)
-export const changeUserTheme = async (newTheme) => api.post(`api/theme/`, newTheme)
+export const getUserTheme = async () => api.get(`${url}api/theme/`)
+export const changeUserTheme = async (newTheme) => api.post(`${url}api/theme/`, newTheme)
 
 // LogEntry
-export const createLog = async (log) => api.post(`api/log/`, log)
-export const updateLog = async (endTime, logId) => api.patch(`api/log/${logId}/`, endTime)
-export const createLogAndUpdateStatus = async (log) => api.post(`api/log-and-update-status/`, log);
+export const createLog = async (log) => api.post(`${url}api/log/`, log)
+export const updateLog = async (endTime, logId) => api.patch(`${url}api/log/${logId}/`, endTime)
+export const createLogAndUpdateStatus = async (log) => api.post(`${url}api/log-and-update-status/`, log);
 
 // Compliance
-export const generateComplianceLog = async (id) => api.get(`api/generate-compliance-log/${id}/`)
+export const generateComplianceLog = async (id) => api.get(`${url}api/generate-compliance-log/${id}/`)
 
 // Cycle hours
-export const getCycleHoursUsed = async (id) => api.get(`api/on-duty-hours-8-days/`)
+export const getCycleHoursUsed = async (id) => api.get(`${url}api/on-duty-hours-8-days/`)
 
 
 
