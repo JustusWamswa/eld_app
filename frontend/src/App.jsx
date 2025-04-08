@@ -12,6 +12,7 @@ import Trips from "./pages/trips"
 import TripSetup from "./pages/tripSetup"
 import { getCycleHoursUsed, getUserTheme } from "./services/api"
 import { useTripStore } from "./stores/useTripStore"
+import FullScreenLoader from "./components/FullScreenLoader"
 
 const ThemeContext = createContext()
 const AuthContext = createContext()
@@ -21,6 +22,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { logEntries, setCycleHoursUsed } = useTripStore()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const token = localStorage.getItem("access_token")
@@ -30,6 +32,7 @@ function App() {
         setDarkMode(res.data.dark_mode)
       })
       .catch((err) => console.log(err))
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
@@ -42,6 +45,8 @@ function App() {
     })
 
   }, [logEntries])
+
+  if (loading) return <FullScreenLoader />
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
